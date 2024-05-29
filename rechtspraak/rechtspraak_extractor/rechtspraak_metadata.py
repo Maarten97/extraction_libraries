@@ -4,6 +4,7 @@
 # This happens in async manner.
 import pathlib
 import os
+import time
 import urllib
 import multiprocessing
 from bs4 import BeautifulSoup
@@ -34,7 +35,9 @@ inhoudsindicatie_df = []
 hasVersion_df = []
 
 threads = []
-max_workers = 0
+max_workers = 1
+
+multi_Threading = True
 
 
 def get_cores():
@@ -44,11 +47,11 @@ def get_cores():
     n_cores = multiprocessing.cpu_count()
 
     global max_workers
-    max_workers = n_cores-1
-    # If the main process is computationally intensive: Set to the number of logical CPU cores minus one.
+    if not multi_Threading:
+        max_workers = n_cores-1
+        # If the main process is computationally intensive: Set to the number of logical CPU cores minus one.
 
-    print(f"Maximum " + str(max_workers) + " threads supported by your machine.")
-
+        print(f"Maximum " + str(max_workers) + " threads supported by your machine.")
 
 def extract_data_from_xml(url):
     with urllib.request.urlopen(url) as response:
@@ -75,7 +78,7 @@ def update_bar(bar, *args):
 
 def save_data_when_crashed(ecli):
     ecli_df.append(ecli)
-    full_text_df.append("")
+    full_text_df.append("ERROR")
     creator_df.append("")
     date_decision_df.append("")
     issued_df.append("")
@@ -87,7 +90,10 @@ def save_data_when_crashed(ecli):
     procedure_df.append("")
     inhoudsindicatie_df.append("")
     hasVersion_df.append("")
+
+
 def get_data_from_api(ecli_id):
+    time.sleep(1)
     url = RECHTSPRAAK_METADATA_API_BASE_URL + ecli_id + return_type
     try:
         response_code = check_api(url)
@@ -256,6 +262,8 @@ def get_rechtspraak_metadata(save_file='n', dataframe=None, filename=None):
                 # Delete temporary directory
                 shutil.rmtree('temp_rs_data')
                 # executor.shutdown()  # Shutdown the executor
+
+
 
                 rsm_df['ecli'] = ecli_df
                 rsm_df['full_text'] = full_text_df
