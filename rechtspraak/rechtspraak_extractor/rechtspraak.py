@@ -106,7 +106,11 @@ def get_rechtspraak(max_ecli=100, sd='1900-01-01', ed=None, save_file='y'):
         print("Getting " + str(amount) + " documents from " + starting_date + " till " + ending_date)
 
         json_object = get_data_from_url(url)
-        print(f"Found {len(json_object)} cases!")
+        if isinstance(json_object, list):
+            print(f"Found {len(json_object)} cases!")
+        else:
+            print(f"Found 1 case!")
+
         if json_object:
             # Get current time
             current_time = datetime.now().strftime("%H-%M-%S")
