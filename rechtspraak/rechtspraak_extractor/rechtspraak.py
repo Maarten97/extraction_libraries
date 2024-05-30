@@ -26,8 +26,10 @@ def get_data_from_url(url):
     json_object = json.loads(json_string)
 
     # Get the JSON object from a specific branch
-    json_object = json_object['feed']['entry']
-
+    try:
+        json_object = json_object['feed']['entry']
+    except KeyError:
+        json_object = 'EMPTY'
     return json_object
 
 
@@ -108,6 +110,9 @@ def get_rechtspraak(max_ecli=100, sd='1900-01-01', ed=None, save_file='y'):
         json_object = get_data_from_url(url)
         if isinstance(json_object, list):
             print(f"Found {len(json_object)} cases!")
+        elif json_object == 'EMPTY':
+            print("No cases found!")
+            return
         else:
             print(f"Found 1 case!")
 
