@@ -40,16 +40,26 @@ def save_csv(json_object, file_name, save_file):
     updated = []
     link = []
 
+    if isinstance(json_object, list):
     # Iterate over the object and fill the lists
-    for i in json_object:
-        ecli_id.append(i['id'])
-        title.append(i['title']['#text'])
-        if '#text' in i['summary']:
-            summary.append(i['summary']['#text'])
+        for i in json_object:
+            ecli_id.append(i['id'])
+            title.append(i['title']['#text'])
+            if '#text' in i['summary']:
+                summary.append(i['summary']['#text'])
+            else:
+                summary.append("No summary available")
+            updated.append(i['updated'])
+            link.append(i['link']['@href'])
+    else:
+        ecli_id.append(json_object['id'])
+        title.append(json_object['title']['#text'])
+        if '#text' in json_object['summary']:
+            summary.append(json_object['summary']['#text'])
         else:
             summary.append("No summary available")
-        updated.append(i['updated'])
-        link.append(i['link']['@href'])
+        updated.append(json_object['updated'])
+        link.append(json_object['link']['@href'])
 
     # Save the lists to dataframe
     df['id'] = ecli_id

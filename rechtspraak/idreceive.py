@@ -54,15 +54,18 @@ def circle_date(start_date, end_date):
     # Loop from startdate to yesterday (inclusive)
     while start_date <= end_date:
         output_date = start_date.strftime(date_format)
+        # to_date = (start_date + timedelta(days=7)).strftime(date_format)
+        to_date = output_date
+        print(f'Output date: {output_date} and to date: {to_date}')
 
-        try:
-            request_id_per_date(output_date)
-            start_date += timedelta(days=7)
-        except Exception as e:
-            # Handle the exception (e.g., print an error message)
-            write_error(f"Error occurred for value {output_date}. Exception type: {type(e).__name__}")
-            start_date += timedelta(days=7)
-            continue
+        # try:
+        request_id_per_date(output_date, to_date)
+        start_date = start_date + timedelta(days=1)
+        # except Exception as e:
+        #     # Handle the exception (e.g., print an error message)
+        #     write_error(f"Error occurred for value {output_date}. Exception type: {type(e).__name__}")
+        #     start_date += timedelta(days=7)
+        #     continue
 
 
 def write_error(text):
@@ -84,13 +87,13 @@ def write_error(text):
 #     return list_rs
 
 
-def request_id_per_date(date):
-    rex.get_rechtspraak(max_ecli=1000, sd=date, ed=date, save_file='y')
+def request_id_per_date(startdate, enddate):
+    rex.get_rechtspraak(max_ecli=1000, sd=startdate, ed=enddate, save_file='y')
 
 
 if __name__ == '__main__':
     # df = rex.get_rechtspraak(max_ecli=1000, sd='2022-08-01', ed='2022-08-01', save_file='n')
     # print(df)
-    input_startdate = '2023-01-01'
-    input_enddate = '2023-01-29'
+    input_startdate = '2023-01-14'
+    input_enddate = '2023-01-16'
     circle_date(input_startdate, input_enddate)

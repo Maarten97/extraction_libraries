@@ -84,14 +84,14 @@ def getowndata(dataframe):
 
 
 if __name__ == '__main__':
-    # rex.get_rechtspraak(max_ecli=20, sd='2024-08-01', save_file='y')
+    rex.get_rechtspraak(max_ecli=20, sd='2024-08-01', save_file='y')
     # print(df)
     # print("df executed, now optaining metadata")
     # rex.get_rechtspraak_metadata(save_file='y', dataframe=df)
     # print("Metadata command executed, main finished")
 
-    # rs_data = pd.read_csv('data/' + 'rechtspraak_2024-08-01_2024-05-29_21-54-06.csv')
-    # getowndata(rs_data)
+    rs_data = pd.read_csv('data/' + 'rechtspraak_2024-08-01_2024-05-30_08-48-55.csv')
+    getowndata(rs_data)
 
-    rex.get_rechtspraak_metadata(save_file='y', filename='rechtspraak_2024-08-01_2024-05-29_21-54-06.csv')
+    # rex.get_rechtspraak_metadata(save_file='y', filename='rechtspraak_2024-08-01_2024-05-30_08-48-55.csv')
     # get_data_from_api('ECLI:NL:RVS:2024:2145')
