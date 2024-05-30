@@ -1,4 +1,5 @@
 import time
+import urllib
 from pathlib import Path
 
 import requests
@@ -14,6 +15,8 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36',
     'Referer': '',  # Set an empty referer
 }
+
+
 
 # -----------------------------------------------------------------------------------------------------------------------
 #
@@ -69,6 +72,12 @@ def check_api(url):
     return response.status_code
 
 
+def extract_data_from_xml(url):
+    with urllib.request.urlopen(url) as response:
+        xml_file = response.read()
+        return xml_file
+
+
 def getowndata(dataframe):
     if dataframe is not None:
         output = pd.DataFrame(columns=['ecli', 'full_text', 'creator', 'date_decision', 'issued',
@@ -81,16 +90,18 @@ def getowndata(dataframe):
         for ecli in ecli_list:
             time.sleep(1)
             get_data_from_api(ecli)
+            url = RECHTSPRAAK_METADATA_API_BASE_URL + ecli + return_type
+            xml_object = extract_data_from_xml(url)
 
 
 if __name__ == '__main__':
-    rex.get_rechtspraak(max_ecli=20, sd='2024-08-01', save_file='y')
+    # rex.get_rechtspraak(max_ecli=20, sd='2024-08-01', save_file='y')
     # print(df)
     # print("df executed, now optaining metadata")
     # rex.get_rechtspraak_metadata(save_file='y', dataframe=df)
     # print("Metadata command executed, main finished")
 
-    rs_data = pd.read_csv('data/' + 'rechtspraak_2024-08-01_2024-05-30_08-48-55.csv')
+    rs_data = pd.read_csv('data/' + 'rechtspraak_2023-03-04_2023-03-04_10-34-29.csv')
     getowndata(rs_data)
 
     # rex.get_rechtspraak_metadata(save_file='y', filename='rechtspraak_2024-08-01_2024-05-30_08-48-55.csv')

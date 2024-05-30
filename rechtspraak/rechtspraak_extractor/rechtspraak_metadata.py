@@ -7,6 +7,9 @@ import os
 import time
 import urllib
 import multiprocessing
+from urllib.error import URLError
+
+import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
@@ -93,7 +96,7 @@ def save_data_when_crashed(ecli):
 
 
 def get_data_from_api(ecli_id):
-    time.sleep(1)
+    time.sleep(0.2)
     url = RECHTSPRAAK_METADATA_API_BASE_URL + ecli_id + return_type
     try:
         response_code = check_api(url)
@@ -158,11 +161,19 @@ def get_data_from_api(ecli_id):
 
                 urllib.request.urlcleanup()
 
+            except URLError as e:
+                print(f'An exception 1 of type {type(e).__name__} occurred in {ecli_id}')
+                print(e.reason)
+                save_data_when_crashed(ecli_id)
+
             except Exception as e:
+                print(f'An exception 3 of type {type(e).__name__} occurred in {ecli_id}')
                 save_data_when_crashed(ecli_id)
         else:
+            # print(f"URL returned with a {response_code} error code")
             save_data_when_crashed(ecli_id)
     except Exception as e:
+        print(f'An exception 2 of type {type(e).__name__} occurred in {ecli_id}')
         save_data_when_crashed(ecli_id)
 
 
@@ -278,8 +289,8 @@ def get_rechtspraak_metadata(save_file='n', dataframe=None, filename=None):
                 rsm_df['procedure'] = procedure_df
                 rsm_df['inhoudsindicatie'] = inhoudsindicatie_df
                 rsm_df['hasVersion'] = hasVersion_df
-                addition = rs_data[['id', 'summary']]
-                rsm_df = rsm_df.merge(addition, how='left', left_on='ecli', right_on='id').drop(['id'], axis=1)
+                # addition = rs_data[['id', 'summary']]
+                # rsm_df = rsm_df.merge(addition, how='left', left_on='ecli', right_on='id').drop(['id'], axis=1)
                 # Create directory if not exists
                 Path('data').mkdir(parents=True, exist_ok=True)
 
