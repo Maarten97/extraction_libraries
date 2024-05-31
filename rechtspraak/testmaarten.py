@@ -8,8 +8,9 @@ import rechtspraak_extractor as rex
 import pandas as pd
 
 # Define base url
-RECHTSPRAAK_METADATA_API_BASE_URL = "http://data.rechtspraak.nl/uitspraken/content?id=" # old one = "https://uitspraken.rechtspraak.nl/#!/details?id="
+RECHTSPRAAK_METADATA_API_BASE_URL = "https://data.rechtspraak.nl/uitspraken/content?id=" # old one = "https://uitspraken.rechtspraak.nl/#!/details?id="
 return_type = "&return=DOC"
+
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36',
@@ -65,7 +66,6 @@ def get_data_from_api(ecli):
         print(f'Forbidden HTTP for ECLI {ecli} with url {url}')
 
 
-
 def check_api(url):
     response = requests.get(f"{url}", headers=headers)
     # Return with the response code
@@ -73,9 +73,13 @@ def check_api(url):
 
 
 def extract_data_from_xml(url):
-    with urllib.request.urlopen(url) as response:
-        xml_file = response.read()
-        return xml_file
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.content
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching XML: {e}")
+        return None
 
 
 def getowndata(dataframe):
@@ -94,15 +98,22 @@ def getowndata(dataframe):
             xml_object = extract_data_from_xml(url)
 
 
+def save_xml_to_file(xml_data, xml_filename):
+    try:
+        with open(xml_filename, 'wb') as file:
+            file.write(xml_data)
+    except IOError as e:
+        print(f"Error saving XML to file: {e}")
+
 if __name__ == '__main__':
-    # rex.get_rechtspraak(max_ecli=20, sd='2024-08-01', save_file='y')
+    # rex.get_rechtspraak(max_ecli=10, sd='2023-08-20', save_file='y')
     # print(df)
     # print("df executed, now optaining metadata")
     # rex.get_rechtspraak_metadata(save_file='y', dataframe=df)
     # print("Metadata command executed, main finished")
 
-    rs_data = pd.read_csv('data/' + 'rechtspraak_2023-03-04_2023-03-04_10-34-29.csv')
-    getowndata(rs_data)
+    # rs_data = pd.read_csv('data/' + 'rechtspraak_2014-01-01_2014-01-01_11-53-32.csv')
+    # getowndata(rs_data)
 
-    # rex.get_rechtspraak_metadata(save_file='y', filename='rechtspraak_2024-08-01_2024-05-30_08-48-55.csv')
+    rex.get_rechtspraak_metadata(save_file='y')
     # get_data_from_api('ECLI:NL:RVS:2024:2145')

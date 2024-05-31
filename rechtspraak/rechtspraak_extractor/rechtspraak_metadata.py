@@ -56,11 +56,21 @@ def get_cores():
 
         print(f"Maximum " + str(max_workers) + " threads supported by your machine.")
 
-def extract_data_from_xml(url):
-    with urllib.request.urlopen(url) as response:
-        xml_file = response.read()
-        return xml_file
+# def extract_data_from_xml(url):
+#     with urllib.request.urlopen(url) as response:
+#         xml_file = response.read()
+#         return xml_file
 
+
+def extract_data_from_xml(url):
+    try:
+        time.sleep(0.5)
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.content
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching XML: {e}")
+        return None
 
 
 def check_if_df_empty(df):
@@ -80,6 +90,7 @@ def update_bar(bar, *args):
 
 
 def save_data_when_crashed(ecli):
+    print(f'Error printed for ECLI {ecli}')
     ecli_df.append(ecli)
     full_text_df.append("ERROR")
     creator_df.append("")
@@ -96,12 +107,12 @@ def save_data_when_crashed(ecli):
 
 
 def get_data_from_api(ecli_id):
-    time.sleep(0.2)
     url = RECHTSPRAAK_METADATA_API_BASE_URL + ecli_id + return_type
     try:
         response_code = check_api(url)
     except:
         save_data_when_crashed(ecli_id)
+        print("Could not make connection to Rechtspraak API")
         return
     global ecli_df, full_text_df, creator_df, date_decision_df, issued_df, zaaknummer_df, type_df, \
         relations_df, references_df, subject_df, procedure_df, inhoudsindicatie_df, hasVersion_df
@@ -170,7 +181,7 @@ def get_data_from_api(ecli_id):
                 print(f'An exception 3 of type {type(e).__name__} occurred in {ecli_id}')
                 save_data_when_crashed(ecli_id)
         else:
-            # print(f"URL returned with a {response_code} error code")
+            print(f"URL returned with a {str(response_code)} error code")
             save_data_when_crashed(ecli_id)
     except Exception as e:
         print(f'An exception 2 of type {type(e).__name__} occurred in {ecli_id}')
@@ -289,8 +300,9 @@ def get_rechtspraak_metadata(save_file='n', dataframe=None, filename=None):
                 rsm_df['procedure'] = procedure_df
                 rsm_df['inhoudsindicatie'] = inhoudsindicatie_df
                 rsm_df['hasVersion'] = hasVersion_df
-                # addition = rs_data[['id', 'summary']]
-                # rsm_df = rsm_df.merge(addition, how='left', left_on='ecli', right_on='id').drop(['id'], axis=1)
+                if rs_data != '':
+                    addition = rs_data[['id', 'summary']]
+                    rsm_df = rsm_df.merge(addition, how='left', left_on='ecli', right_on='id').drop(['id'], axis=1)
                 # Create directory if not exists
                 Path('data').mkdir(parents=True, exist_ok=True)
 

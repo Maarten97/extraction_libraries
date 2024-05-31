@@ -94,6 +94,6 @@ def request_id_per_date(startdate, enddate):
 if __name__ == '__main__':
     # df = rex.get_rechtspraak(max_ecli=1000, sd='2022-08-01', ed='2022-08-01', save_file='n')
     # print(df)
-    input_startdate = '2023-03-01'
-    input_enddate = '2023-12-31'
+    input_startdate = '2014-01-01'
+    input_enddate = '2022-12-31'
     circle_date(input_startdate, input_enddate)
