@@ -63,8 +63,8 @@ def get_cores():
 
 
 def extract_data_from_xml(url):
+    time.sleep(0.5)
     try:
-        time.sleep(0.5)
         response = requests.get(url)
         response.raise_for_status()
         return response.content
